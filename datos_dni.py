@@ -1,4 +1,3 @@
-#from email.quoprimime import body_check
 import os
 #from telnetlib import PRAGMA_HEARTBEAT
 import time
@@ -27,6 +26,7 @@ negro= Fore.BLACK
 
 #FUNCIONES
 def consultar_DNI():
+    print(f"{amarillo}Porfavor escribe el DNI de forma correcta (8 digitos)")
     dni = input(f"{azul}Ingresa el numero de DNI: ")
     url = "https://www.dayangels.xyz/api/reniec/reniec-dni"
     API_TOKEN= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4NCwiY29ycmVvIjoibGlsanVtZXg3NDFAZ21haWwuY29tIiwiaWF0IjoxNjU0MjI2NDQxfQ.cwgCEOPkXNZVEeY2uNp260W--qhh7cQ_X-WlCvTswzA"
@@ -43,6 +43,41 @@ def consultar_DNI():
         print(f"{amarillo}DNI encontrado, con {verde} {mensaje}")
         print(f"{negro} {fblanco}NOMBRES: ", data["result"]["nombres"],f"{fin}","\n",f"{fblanco}APELLIDO PATERNO: ", data["result"]["paterno"],f"{fin}","\n",f"{fblanco}APELLIDO MATERNO: ", data["result"]["materno"],f"{fin}","\n",f"{fblanco}SEXO:", data["result"]["sexo"],f"{fin}")
         print(f"{rojo}-----------------------------------------------------")
+
+def consultar_DNI2():
+    print(f'''
+    {amarillo}Es necesario un token para este metodo, puede generarlo en 
+    {azul} https://perudevs.com/#/web/inicio, (opcional de por mientras)
+    {rojo}(si no funciona este metodo, puede que tengas que colocar el token obligatoriamente)
+    ''')
+    token1 = input(f"{amarillo}Ingresa tu token {azul}(opcional): ")
+    if token1 == "":
+        print(f"{rojo}No has ingresado ningun token")
+        token1 = "cGVydWRldnMucHJvZHVjdGlvbi5maXRjb2RlcnMuNjI5ZDcxZTBhMmI1YzkyOGQ3NWEyZDIw"
+        print(f"{verde}token predeterminado activado")
+    else:
+        tokenUsuario = token1
+        print(f"{verde}token ingresado correctamente")
+    print(f"{amarillo}-----------------------------------------------------------------------------")
+    print(f"{amarillo}Porfavor escribe el DNI de forma correcta (8 digitos)")
+    #metodo
+    dni1 = input(f"{azul}Ingresa el numero de DNI: ")
+    urlPerudev = "https://api.perudevs.com/api/v1/dni/complete?document=DOCUMENT&key=KEY"
+    urlPerudev = urlPerudev.replace("DOCUMENT", dni1)
+    if token1 == "":
+        urlPerudev = urlPerudev.replace("KEY", tokenUsuario)
+    else:
+        urlPerudev = urlPerudev.replace("KEY", token1)
+    dataPerudev = requests.get(urlPerudev)
+
+    dataJson2 = dataPerudev.json()
+    if dataJson2["estado"] == False:
+        print(f"{rojo}DNI no encontrado, {rojo} {dataJson2['mensaje']}")
+    else:
+        print(f"{amarillo}DNI encontrado, {verde} {dataJson2['mensaje']}")
+        print(f"{negro} {fblanco}DNI: ",dataJson2["resultado"]["id"],f"{fin}","\n",f"{fblanco}NOMBRES: ", dataJson2["resultado"]["nombres"],f"{fin}","\n",f"{fblanco}APELLIDO PATERNO: ", dataJson2["resultado"]["apellido_paterno"],f"{fin}","\n",f"{fblanco}APELLIDO MATERNO: ", dataJson2["resultado"]["apellido_materno"],f"{fin}","\n",f"{fblanco}FECHA DE NACIMIENTO: ",dataJson2["resultado"]["fecha_nacimiento"],f"{fin}","\n",f"{fblanco}SEXO:", dataJson2["resultado"]["genero"],f"{fin}","\n",f"{fblanco}CODIGO VERIFICACION:",dataJson2["resultado"]["codigo_verificacion"],f"{fin}")
+    print(f"{rojo}-----------------------------------------------------")
+
 
 def consultar_NOMBRE():
     print(f"{amarillo}Escribe los nombres y apellidos de forma correcta")
@@ -67,7 +102,9 @@ def consultar_NOMBRE():
         for x in data1["result"]:
             print(x["dni"], x["paterno"], x["materno"], x["nombres"])
         print(f"{rojo}-----------------------------------------------------")  
+
 def consultar_NOMBRE2():
+    print(f"{amarillo}Escribe los nombres y apellidos de forma correcta")
     nombre1 = input(str(f"{azul}Ingresa el nombre: "))
     apellidop1 = input(str(f"{azul}Ingresa el apellido paterno: "))
     apellidom1 = input(str(f"{azul}Ingresa el apellido materno: "))
@@ -159,9 +196,10 @@ def opcion():
     print(f'''
     {lrojo}OPCIONES DISPONIBLES:
     {verde}[1] Buscar DNI
-    {verde}[2] Buscar DNI por nombres
-    {verde}[3] Buscar DNI por nombres(metodo2)
-    {verde}[4] Consultar operadora
+    {verde}[2] Buscar DNI (metodo2 con token)
+    {verde}[3] Buscar DNI por nombres
+    {verde}[4] Buscar DNI por nombres (metodo2)
+    {verde}[5] Consultar operadora
     -------------------------------------------
     {rojo}[5] Salir
 
@@ -171,15 +209,18 @@ def opcion():
         consultar_DNI()
         opcion()
     elif op == "2":
-        consultar_NOMBRE()
+        consultar_DNI2()
         opcion()
     elif op == "3":
-        consultar_NOMBRE2()
+        consultar_NOMBRE()
         opcion()
     elif op == "4":
-        consultar_OPERADOR()
+        consultar_NOMBRE2()
         opcion()
     elif op == "5":
+        consultar_OPERADOR()
+        opcion()
+    elif op == "6":
         print(f"{fblanco}{amarillo}bye :3{fin} ")
         time.sleep(2)
         os.system('cls')
@@ -187,7 +228,6 @@ def opcion():
     else:
         print(f"{rojo}ERROR :,c opción incorrecta")
         opcion()
-
 
 if __name__ == "__main__":
     inicio()
