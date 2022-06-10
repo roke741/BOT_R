@@ -78,7 +78,6 @@ def consultar_DNI2():
         print(f"{negro} {fblanco}DNI: ",dataJson2["resultado"]["id"],f"{fin}","\n",f"{fblanco}NOMBRES: ", dataJson2["resultado"]["nombres"],f"{fin}","\n",f"{fblanco}APELLIDO PATERNO: ", dataJson2["resultado"]["apellido_paterno"],f"{fin}","\n",f"{fblanco}APELLIDO MATERNO: ", dataJson2["resultado"]["apellido_materno"],f"{fin}","\n",f"{fblanco}FECHA DE NACIMIENTO: ",dataJson2["resultado"]["fecha_nacimiento"],f"{fin}","\n",f"{fblanco}SEXO:", dataJson2["resultado"]["genero"],f"{fin}","\n",f"{fblanco}CODIGO VERIFICACION:",dataJson2["resultado"]["codigo_verificacion"],f"{fin}")
     print(f"{rojo}-----------------------------------------------------")
 
-
 def consultar_NOMBRE():
     print(f"{amarillo}Escribe los nombres y apellidos de forma correcta")
     nombre = input(str(f"{azul}Ingresa el nombre: "))
@@ -196,12 +195,12 @@ def opcion():
     print(f'''
     {lrojo}OPCIONES DISPONIBLES:
     {verde}[1] Buscar DNI
-    {verde}[2] Buscar DNI (metodo2 con token)
+    {verde}[2] Buscar DNI (metodo 2 con token)
     {verde}[3] Buscar DNI por nombres
-    {verde}[4] Buscar DNI por nombres (metodo2)
+    {verde}[4] Buscar DNI por nombres (metodo 2)
     {verde}[5] Consultar operadora
-    -------------------------------------------
-    {rojo}[5] Salir
+    --------------------------------------------
+    {rojo}[6] Salir
 
     {lazul}...elige una opción: ''')
     op = input(f"{violeta}>> ")
