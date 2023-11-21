@@ -24,22 +24,18 @@ Realizado en python3  [![Python](https://img.shields.io/pypi/pyversions/3?style=
 Para su intalacion, se requiere python 3
 y las siguientes librerias:
 
-Los token son generados de: https://www.dayangels.xyz/
-
 ```bash
     pip install beautifulsoup4
     pip install mechanize
     pip install colorama
     pip install requests
-    pip install CaseInsensitiveDict
+    pip install halo
+    pip install python-dotenv
 ```
     
 ## Caracteristicas por agregar
 Futuras actualizaciones y caracteristicas
-- Busqueda de fecha de nacimiento
-- Codigo de verificacion
-- Exportacion pdf
-- Inclucion de token propios
+- Busqueda de dni por nombre y apellido
 
 
 ## Autor
