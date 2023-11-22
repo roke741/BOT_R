@@ -16,7 +16,8 @@ Realizado en python3  [![Python](https://img.shields.io/pypi/pyversions/3?style=
 
 ## Screenshots
 
-![BOT_R Screenshot](https://user-images.githubusercontent.com/65454249/172035833-a46d8d15-aa3e-4b75-972d-b7f7682a21f6.png)
+![BOT_R Screenshot]
+![image](https://github.com/roke741/BOT_R/assets/65454249/2cd89763-0f46-4e17-8b7a-30e861a2865e)
 
 
 ## Installation
