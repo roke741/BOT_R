@@ -1,21 +1,28 @@
 import os
 import time
 import requests
-
-import importlib
 import subprocess
 
-paquetes_necesarios = ['requests', 'colorama', 'mechanize', 'beautifulsoup4', 'python-dotenv', 'halo']
+print('Comprobando paquetes necesarios...')
+paquetes_necesarios = ["requests", "colorama", "mechanize", "beautifulsoup4", "python-dotenv", "halo"]
 def verificar_paquetes():
-    paquetes_faltantes = [paquete for paquete in paquetes_necesarios if not importlib.util.find_spec(paquete)]
+    paquetes_faltantes = []
+
+    for paquete in paquetes_necesarios:
+        try:
+            subprocess.run(['pip', 'show', paquete], check=True, capture_output=True)
+        except subprocess.CalledProcessError:
+            paquetes_faltantes.append(paquete)
+
     return paquetes_faltantes
+    #paquetes_faltantes = [paquete for paquete in paquetes_necesarios if not importlib.util.find_spec(paquete)]
+    #return paquetes_faltantes
 
 def instalar_paquetes(paquetes):
     for paquete in paquetes:
         subprocess.run(['pip', 'install', paquete])
-
+        
 paquetes_faltantes = verificar_paquetes()
-
 if paquetes_faltantes:
     print("Faltan paquetes necesarios para el funcionamiento del script:")
     for paquete in paquetes_faltantes:
@@ -25,8 +32,7 @@ if paquetes_faltantes:
         instalar_paquetes(paquetes_faltantes)
     else:
         print("No se han instalado los paquetes. El script puede no funcionar correctamente.")
-else:
-    pass
+    paquetes_faltantes = verificar_paquetes()
 
 from bs4 import BeautifulSoup
 from mechanize import Browser
@@ -47,32 +53,32 @@ CYAN = Fore.CYAN
 VIOLETA = Fore.MAGENTA
 AZUL = Fore.BLUE
 LAZUL = Fore.LIGHTBLUE_EX
+NEGRO = Fore.BLACK
 FBLANCO = Back.WHITE
 FIN = Back.RESET
-NEGRO= Fore.BLACK
 
 load_dotenv()
 
-spinner = Halo(text="Iniciando script... 🔥", text_color= 'cyan', color='green', spinner='dots' )
+spinner = Halo(text="🔥 Iniciando script...", text_color= 'cyan', color='green', spinner='dots' )
 spinner.start()
 time.sleep(3)
-spinner.succeed('Listo para funcionar!🔥')
-spinner.text = 'Buscando... 🔎'
-#spinner = Halo(text="Buscando...", spinner={ "interval": 400, "frames": ["⏳", "⌛", ""]})
-#FUNCIONES    
+spinner.succeed('🔥 Listo para funcionar!')
+spinner.text = '🔎 Buscando...'
+
+#FUNCIONES
 def consultar_DNI():
     url = os.getenv("API1_URL")
-    print(f"{AMARILLO}Porfavor ingrese el DNI de forma correcta (8 digitos) 🪪")
-    dni = input(f"{AZUL}Ingresa el numero de DNI: ")
+    print(f"\n{AMARILLO}⚠️ Porfavor ingrese el DNI de forma correcta (8 digitos) ")
+    dni = input(f"{FBLANCO}{NEGRO}🪪 Ingresa el numero de DNI:{FIN}{BLANCO} ")
     
     if not dni.isnumeric() or len(dni) != 8:
-       return print(f"{ROJO}El numero de DNI que ingresaste no es correcto ⚠️")
+       return print(f"{ROJO}⚠️ El numero de DNI que ingresaste no es correcto ")
         
     formData = {
         "txtDocumento": dni,
         "codigoDocumento": "01"
     }
-        
+      
     try:
         spinner.start()
         time.sleep(1)
@@ -81,51 +87,38 @@ def consultar_DNI():
         response = data["dataJson"]["persona"]
         spinner.stop()
         if response["coRpta"] != 'OK':
-            print(f"{AMARILLO} DNI no encontrado ⚠️")
+            print(f"{AMARILLO}⚠️ DNI no encontrado ")
         else:
-            
-            print(f"{LVERDE}DNI {dni} encontrado ⚡")
-            print(
-                f"{NEGRO} {FBLANCO}NOMBRES: ", response["preNombres"],
-                f"{FIN}","\n",
-                f"{FBLANCO}APELLIDO PATERNO: ", response["apPaterno"],
-                f"{FIN}","\n",
-                f"{FBLANCO}APELLIDO MATERNO: ", response["apMaterno"],
-                f"{FIN}","\n",
-                f"{FBLANCO}GENERO: ", response["coGenero"],
-                f"{FIN}","\n",
-                f"{FBLANCO}FECHA DE NACIMIENTO: ", response["feNac"],
-                f"{FIN}","\n",
-                f"{FBLANCO}COD. UBIGEO: ", response["coUbigeo"],
-                f"{FIN}","\n",
-                f"{FBLANCO}DIRECCION: ", response["deDireccion"],
-                f"{FIN}","\n",
-                f"{FBLANCO}UBIGEO: ", response["deUbigeoDep"],"/",response["deUbigeoPro"],"/",response["deUbigeoDis"],
-                f"{FIN}"
-            )
-            
+            print(f'''{LVERDE}
+    ************** ⚡ DNI {dni} encontrado **************
+    - NOMBRES: {LAZUL}{response["preNombres"]}{LVERDE}
+    - APELLIDO PATERNO: {LAZUL}{response["apPaterno"]}{LVERDE}
+    - APELLIDO MATERNO: {LAZUL}{response["apMaterno"]}{LVERDE}
+    - GENERO: {LAZUL}{response["coGenero"]}{LVERDE}
+    - FECHA DE NACIMIENTO: {LAZUL}{response["feNac"]}{LVERDE}
+    - COD. UBIGEO: {LAZUL}{response["coUbigeo"]}{LVERDE}
+    - DIRECCION: {LAZUL}{response["deDireccion"]}{LVERDE}
+    - UBIGEO: {LAZUL}{response["deUbigeoDep"]}/{response["deUbigeoPro"]}/{response["deUbigeoDis"]}{LVERDE}
+    ********************************************************
+            ''')
     except requests.exceptions.Timeout:
         print("La solicitud ha excedido el tiempo de espera ⌛")
     except Exception as e:
         print(f"{ROJO}OCURRIO UN ERROR INESPERARDO ❗")
         print(f"Type: {type(e)}, Args: {e.args}")
-    
-
-
-
 
 def consultar_DNI2():
     url = os.getenv("API2_URL")
-    print(f"{AMARILLO}------------------------------------------------------")
-    print(f"{AMARILLO}Porfavor ingrese el DNI de forma correcta (8 digitos) 🪪")
-    dni = input(f"{AZUL}Ingresa el numero de DNI: ")
+    print(f"\n{AMARILLO}⚠️ Porfavor ingrese el DNI de forma correcta (8 digitos) ")
+    dni = input(f"{FBLANCO}{NEGRO}🪪 Ingresa el numero de DNI:{FIN}{BLANCO} ")
     
     if not dni.isnumeric() or len(dni) != 8:
-        return print(f"{ROJO}El numero de DNI que ingresaste no es correcto ⚠️")
+        return print(f"{ROJO}⚠️ El numero de DNI que ingresaste no es correcto ")
     
     formData = {
         "dni": dni,
     }
+    
     try:
         spinner.start()
         time.sleep(1)
@@ -133,27 +126,20 @@ def consultar_DNI2():
         response = res.json()
         spinner.stop()
         if response["cod_error"] != '0000':
-            print(f"{AMARILLO} DNI no encontrado ⚠️")
+            print(f"{AMARILLO}⚠️ DNI no encontrado")
         else:
-            print(f"{LVERDE}DNI {dni} encontrado ⚡")
-            print(
-                f"{NEGRO} {FBLANCO}NOMBRES: ", response["nombres"],
-                f"{FIN}","\n",
-                f"{FBLANCO}APELLIDO PATERNO: ", response["ap_paterno"],
-                f"{FIN}","\n",
-                f"{FBLANCO}APELLIDO MATERNO: ", response["ap_materno"],
-                f"{FIN}","\n",
-                f"{FBLANCO}GENERO: ", response["sexo"],
-                f"{FIN}","\n",
-                f"{FBLANCO}FECHA DE NACIMIENTO: ", response["fec_nacimiento"],
-                f"{FIN}","\n",
-                f"{FBLANCO}EDAD: ", response["edad"],
-                f"{FIN}","\n",
-                f"{FBLANCO}DIRECCION: ", response["direccion"],
-                f"{FIN}","\n",
-                f"{FBLANCO}UBIGEO: ", response["departamento"],"/",response["provincia"],"/",response["distrito"],
-                f"{FIN}"
-            )
+            print(f'''{LVERDE}
+    ************** ⚡ DNI {dni} encontrado **************
+    - NOMBRES: {LAZUL}{response["nombres"]}{LVERDE}
+    - APELLIDO PATERNO: {LAZUL}{response["ap_paterno"]}{LVERDE}
+    - APELLIDO MATERNO: {LAZUL}{response["ap_materno"]}{LVERDE}
+    - GENERO: {LAZUL}{response["sexo"]}{LVERDE}
+    - FECHA DE NACIMIENTO: {LAZUL}{response["nombres"]}{LVERDE}
+    - EDAD: {LAZUL}{response["edad"]}{LVERDE}
+    - DIRECCION: {LAZUL}{response["direccion"]}{LVERDE}
+    - UBIGEO: {LAZUL}{response["departamento"]}/{response["provincia"]}/{response["distrito"]}{LVERDE}
+    ********************************************************
+            ''')
     except requests.exceptions.Timeout:
         spinner.stop()
         print("La solicitud ha excedido el tiempo de espera ⌛")
@@ -163,13 +149,18 @@ def consultar_DNI2():
         print(f"Type: {type(e)}, Args: {e.args}")
 
 def consultar_NOMBRE():
-    print(f"{AMARILLO}En constriccion... ⚠️")
+    print(f'''{AMARILLO}
+    *****************************
+    *  ⚠️ EN CONSTRUCCION...    *
+    *   Utiliza el metodo 2     *
+    *****************************
+    ''')
 
 def consultar_NOMBRE2():
-    print(f"{AMARILLO}Escribe los nombres y apellidos de forma correcta")
-    nombre1 = input(str(f"{AZUL}Ingresa el nombre: "))
-    apellidop1 = input(str(f"{AZUL}Ingresa el apellido paterno: "))
-    apellidom1 = input(str(f"{AZUL}Ingresa el apellido materno: "))
+    print(f"\n{AMARILLO}⚠️ Escribe los nombres y apellidos de forma correcta")
+    nombre1 = input(str(f"{FBLANCO}{NEGRO}🚹 Ingresa el nombre:{FIN}{BLANCO} "))
+    apellidop1 = input(str(f"{FBLANCO}{NEGRO}🚹 Ingresa el apellido paterno:{FIN}{BLANCO} "))
+    apellidom1 = input(str(f"{FBLANCO}{NEGRO}🚹 Ingresa el apellido materno:{FIN}{BLANCO} "))
     try:
         spinner.start()
         time.sleep(1)
@@ -196,7 +187,7 @@ def consultar_NOMBRE2():
         body = soup.find_all('tr')
         for x in body:
             print(f"{CYAN}",x.get_text("  |  ", strip=True))
-        print(f"{ROJO}-----------------------------------------------------")
+        print(f"{ROJO}---------------------------------------------------------------")
     except requests.exceptions.Timeout:
         spinner.stop()
         print("La solicitud ha excedido el tiempo de espera ⌛")
@@ -207,9 +198,14 @@ def consultar_NOMBRE2():
     
 
 def consultar_OPERADOR():
-    numero = input(f"{AZUL}Ingrese el número de celular: ")
+    print(f"\n{AMARILLO}⚠️ Porfavor ingrese el número de celular de forma correcta (9 digitos)")
+    numero = input(f"{FBLANCO}{NEGRO}📞 Ingrese el número de celular:{FIN}{BLANCO} ")
+   
     url = f"http://apilayer.net/api/validate?access_key=fa98ed6dafaad5258279886948185705&number={numero}&country_code=PE&format=1" 
     try:
+        if not numero.isnumeric() or len(numero) != 9:
+            return print(f"{ROJO}⚠️ El numero de celular que ingresaste no es correcto")
+        
         spinner.start()
         time.sleep(1)
         data3 = requests.get(url)
@@ -217,51 +213,62 @@ def consultar_OPERADOR():
         spinner.stop()
         
         if response['valid'] == False:
-            print(f"{ROJO}Número no válido o no existe")
-        else:        
-            print(f"{VIOLETA} Número válido: {VERDE}{response['valid']}\n {VIOLETA}Numero de celular: {BLANCO}{response['international_format']}\n {VIOLETA}Pais: {BLANCO}{response['country_name']} \n {VIOLETA}Operador:{BLANCO} {response['carrier']} ")
-        print(f"{ROJO}-----------------------------------------------------")
+            print(f"{ROJO}⚠️ Número no válido o no existe")
+        else:
+            print(f'''{LVERDE}
+    ************* ⚡ Número encontrado *************
+    - Número válido: {LVERDE}{response['valid']}"
+    - Numero de celular: {LAZUL}{response['international_format']}{LVERDE}
+    - Pais: {LAZUL}{response['country_name']}{LVERDE}
+    - Operador: {LAZUL}{response['carrier']}{LVERDE}
+    ************************************************
+            ''')
+
     except requests.exceptions.Timeout:
         spinner.stop()
-        print("La solicitud ha excedido el tiempo de espera ⌛")
+        print("⌛ La solicitud ha excedido el tiempo de espera")
     except Exception as e:
         spinner.stop()
         print(f"{ROJO}OCURRIO UN ERROR INESPERARDO ❗")
         print(f"Type: {type(e)}, Args: {e.args}")
         
 def inicio():
-    print(f'''{ROJO}
+    print(f'''{LROJO}
     ┌──┐░░░░┌┐░┌───┐░
     │┌┐│░░░┌┘└┐│┌─┐│░
     │└┘└┬──┼┐┌┘│└─┘│░
     │┌─┐│┌┐│││░│┌┐┌┘░
     │└─┘│└┘││└┐│││└┬┐
-    └───┴──┘└─┘└┘└─┴┘ {VIOLETA}Version. 1.2
-    {VERDE}DESARROLLADO POR ROKE
-    {AZUL}https://github.com/roke741
+    └───┴──┘└─┘└┘└─┴┘ {LVERDE}Version. 1.2
+    {VIOLETA}DESARROLLADO POR ROKE
+    {VIOLETA}https://github.com/roke741
     ''')
-    print(f'''{ROJO}Importante⚠️  :
-        La información provista en esta aplicación es de dominio público y se ofrece con el propósito de compartir conocimientos.
-        No garantizamos la integridad de la información.
-        Los usuarios deben evaluar y utilizarla bajo su propio riesgo.
-        Nos reservamos el derecho de realizar cambios sin previo aviso.
-        Al usar la aplicación, aceptas este descargo de responsabilidad.''')
+    print(f'''{AMARILLO}Importante ⚠️  :{ROJO}
+    La información provista en esta aplicación 
+    es de dominio público y se ofrece con el propósito 
+    de compartir conocimientos.
+    No garantizamos la integridad de la información.
+    Los usuarios deben evaluar y 
+    utilizarla bajo su propio riesgo.
+    Nos reservamos el derecho de realizar 
+    cambios sin previo aviso.
+    AL USAR LA APLICACION, ACEPTAS ESTE DESCARGO
+    DE RESPONSABILIDAD.''')
     time.sleep(0.5)
 
 def opcion():
-    print(f'''{VERDE}
-    --------------------------------------------
-    {LROJO}OPCIONES DISPONIBLES:
+    print(f'''{CYAN}
+    ---------{CYAN}OPCIONES DISPONIBLES:{CYAN}--------------
     {LVERDE}[1] Buscar DNI
     {LVERDE}[2] Buscar DNI (metodo 2)
-    {ROJO}[3] Buscar DNI por nombres - NO DISPONIBLE
+    {LROJO}[3] Buscar DNI por nombres - NO DISPONIBLE
     {LVERDE}[4] Buscar DNI por nombres (metodo 2)
-    {LVERDE}[5] Consultar operadora
+    {LVERDE}[5] Consultar operadora{CYAN}
     --------------------------------------------
-    {ROJO}[6] Salir
+    {LROJO}[6] Salir
 
-    {AZUL}...Elige una opción🔥 :''')
-    op = input(f"{VIOLETA}>> ")
+    {CYAN}...Elige una opción 🔥 :''')
+    op = input(f"{CYAN}>>>{BLANCO} ")
     if op == "1":
         consultar_DNI()
         opcion()
